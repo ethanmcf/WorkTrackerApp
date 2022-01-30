@@ -29,8 +29,7 @@ class ViewController: UIViewController {
     var selectedMonth: String!
     
     var newShift: Shift!
-    var shifts: [Shift]!
-    var shiftInfo: [Shift:[Any]] = [:] //ButEn,ButIm,dColor,tColor
+    var shiftInfo: [Shift:[Any]] = [:] // [shiftOrderNum: []]   //ButEn,ButIm,dColor,tColor
     var monthlyHoursPaid: Float!
     var monthlyHoursWorked: Float!
     
@@ -81,30 +80,14 @@ extension ViewController{
     }
     
     @IBAction func prevMonth(_ sender: Any) {
-        let calendar = Calendar(identifier: .gregorian)
-        //Create currently selected datecomp as actual date
-        let theSelectedDate = calendar.date(from: selectedDate)
-        //Create a month component to add
-        var increaseComp = DateComponents()
-        increaseComp.month = -1
-        //Add one month to selected date to get new date by one month
-        let newDate = Calendar.current.date(byAdding: increaseComp,  to: theSelectedDate!)
-        //Get components of new selected month
-        updateDate(date: newDate!)
+        updateSelectedDate(increadBy: -1)
         updateView()
         shiftTable.reloadData()
     }
     
     @IBAction func nextMonth(_ sender: Any) {
-        let calendar = Calendar(identifier: .gregorian)
-        //Create currently selected datecomp as actual date
-        let theSelectedDate = calendar.date(from: selectedDate)
-        //Create a month component to add
-        var increaseComp = DateComponents()
-        increaseComp.month = 1
-        //Add one month to selected date to get new date by one month
-        let newDate = Calendar.current.date(byAdding: increaseComp,  to: theSelectedDate!)
-        updateDate(date: newDate!)
+
+        updateSelectedDate(increadBy: 1)
         updateView()
         shiftTable.reloadData()
     }
@@ -156,8 +139,10 @@ extension ViewController{
         //Add job if user's first time using app
         checkFirstTime()
         
-        //Get curr date
-        updateDate(date: Date())
+        //Get/Set curr date
+        selectedDate.month = Calendar.current.component(.month,from: Date())
+        selectedDate.year = Calendar.current.component(.year,from: Date())
+        updateSelectedDate(increadBy: 0)
         
         //Configure job options, get all jobs and get selected Job
         configureJobSwitch()
@@ -554,30 +539,33 @@ extension ViewController{
         shiftTable.reloadData()
     }
     
-    func updateDate(date: Date){
-        let calendar = Calendar.current
-
-        selectedDate.month = calendar.component(.month,from: date)
-        selectedDate.year = calendar.component(.year,from: date)
+    func updateSelectedDate(increadBy amount: Int){
+        let calendar = Calendar(identifier: .gregorian)
+        //Create currently selected datecomp as actual date
+        let theSelectedDate = calendar.date(from: selectedDate)
+        //Create a month component to add
+        var increaseComp = DateComponents()
+        increaseComp.month = amount
+        //Add one month to selected date to get new date by one month
+        let newDate = Calendar.current.date(byAdding: increaseComp,  to: theSelectedDate!)!
+        
+        selectedDate.month = Calendar.current.component(.month,from: newDate)
+        selectedDate.year = Calendar.current.component(.year,from: newDate)
         
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "MMMM"
-        selectedMonth = monthFormatter.string(from: date)
+        selectedMonth = monthFormatter.string(from: newDate)
         monthLabel.text = selectedMonth
     }
     
     func checkFirstTime(){
-        var count = 0
-        let allJobs = try! context.fetch(Job.fetchRequest())
-        for _ in allJobs{
-            count += 1
-        }
-        if count == 0{
+        if try! context.fetch(Job.fetchRequest()).count == 0{
             let newJob = Job(context: context)
             newJob.name = "Job #1"
             newJob.hoursWorked = 0
             newJob.hoursPaid = 0
             newJob.shifts = []
+            newJob.payRate = 15.00
             try! context.save()
         }
     }
