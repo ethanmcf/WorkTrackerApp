@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Job" representedClassName="Job" syncable="YES">
+        <attribute name="hoursPaid" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="hoursWorked" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="payRate" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="shifts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Shift" inverseName="job" inverseEntity="Shift"/>
+    </entity>
+    <entity name="Shift" representedClassName="Shift" syncable="YES">
+        <attribute name="day" optional="YES" attributeType="String"/>
+        <attribute name="length" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="month" optional="YES" attributeType="String"/>
+        <attribute name="payed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="time" optional="YES" attributeType="String"/>
+        <attribute name="year" optional="YES" attributeType="String"/>
+        <relationship name="job" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Job" inverseName="shifts" inverseEntity="Job"/>
+    </entity>
+    <elements>
+        <element name="Job" positionX="-63" positionY="-18" width="128" height="104"/>
+        <element name="Shift" positionX="-45" positionY="27" width="128" height="134"/>
+    </elements>
+</model>
