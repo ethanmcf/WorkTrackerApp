@@ -62,17 +62,24 @@ extension ViewController{
         dForm.dateFormat = "MMM d, yyyy"
         
         let totalHours = selectedJob.hoursWorked
-        var lowest = Date()
+        var lowestDate = Date()
         var startDate = ""
         for shift in selectedJob.shifts!.allObjects as! [Shift]{
-            let sDate = "\(shift.month!) \(shift.day!), \(shift.year!)"
-            let date = dForm.date(from: sDate)!
-            if date.compare(lowest) == .orderedAscending{
-                startDate = sDate
-                lowest = date
+            let stringDate = "\(shift.month!) \(shift.day!), \(shift.year!)"
+            let date = dForm.date(from: stringDate)!
+            if date.compare(lowestDate) == .orderedAscending{
+                startDate = stringDate
+                lowestDate = date
             }
         }
-        let message = "First shift on \(startDate) and have worked \(totalHours) hours."
+        
+        var message = "First shift on \(startDate) and have worked \(totalHours) hours."
+        
+        if startDate == ""{
+            message = "No information collected yet."
+        }
+        
+        //Create Alert
         let alert = UIAlertController(title: "\(selectedJob.name!) Info", message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         alert.addAction(okAction)
