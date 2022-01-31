@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     var selectedMonth: String!
     
     var newShift: Shift!
-    var shiftInfo: [Shift:[Any]] = [:] // [shiftOrderNum: [shift]]   //ButEn,ButIm,dColor,tColor
+    var shiftInfo: [Int:[Any]] = [:] // [shiftOrderNum: [shift, Bool(buttonEnabled), ButtonImageName, dateLabelColor, timeLabelColor]
     var monthlyHoursPaid: Float!
     var monthlyHoursWorked: Float!
     
@@ -251,30 +251,34 @@ extension ViewController{
         var allShifts = (selectedJob!.shifts!.allObjects as! [Shift])
         allShifts = allShifts.sorted(by: { Int($0.day!)! > Int($1.day!)! }).reversed()
         
-        //Get shifts for selected month and year/order them
+        //Resest values to perform calculations/gathering of data
+        monthlyHoursPaid = 0
+        monthlyHoursWorked = 0
         shiftInfo = [:]
-        for i in 0...allShifts.count{
-            let shift = allShifts[i]
-            if shift.month == selectedMonth && shift.year == String(selectedDate.year!){
+        
+        if allShifts.count != 0{
+            //Get shifts for selected month and year/order them
+            for i in 0...allShifts.count-1{
+                let shift = allShifts[i]
+                if shift.month == selectedMonth && shift.year == String(selectedDate.year!){
+                    if shift.payed == true{
+                        //ButEn,ButIm,dColor,tColor,
+                        shiftInfo[i] = [shift, false,"checkmark.circle", UIColor.systemGray2, UIColor.systemGray3]
+                    }else{
+                        shiftInfo[i] = [shift, true,"circle", UIColor.black,UIColor.darkGray]
+                    }
+                }
+            }
+            
+            //Update hours and amount owed
+            for i in 0...shiftInfo.values.count-1{
+                let shift = shiftInfo[i]![0] as! Shift
+                monthlyHoursWorked += shift.length
                 if shift.payed == true{
-                    //ButEn,ButIm,dColor,tColor,
-                    shiftInfo[shift] = [false,"checkmark.circle", UIColor.systemGray2, UIColor.systemGray3]
-                }else{
-                    shiftInfo[shift] = [true,"circle", UIColor.black,UIColor.darkGray]
+                    monthlyHoursPaid += shift.length
                 }
             }
         }
-        
-        //Update hours and amount owed
-        monthlyHoursPaid = 0
-        monthlyHoursWorked = 0
-        for shift in Array(shiftInfo.keys){
-            monthlyHoursWorked += shift.length
-            if shift.payed == true{
-                monthlyHoursPaid += shift.length
-            }
-        }
-        
     }
     
     func updateSelectedDate(increadBy amount: Int){
@@ -457,10 +461,12 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        
+        let eachShift = shiftInfo[indexPath.row]![0] as! Shift
+        var eachShiftInfo = shiftInfo[indexPath.row]!
+        eachShiftInfo.remove(at: 0)
+        
         let cell = shiftTable.dequeueReusableCell(withIdentifier: ShiftTableViewCell.identifier, for: indexPath) as! ShiftTableViewCell
-        let eachShift = Array(shiftInfo.keys)[indexPath.row]
-        let eachShiftInfo = Array(shiftInfo.values)[indexPath.row]
-        print(indexPath.row)
         cell.configure(shift: eachShift, shiftInfo: eachShiftInfo)
         cell.delegate = self
         return cell
@@ -469,7 +475,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle  == .delete{
             shiftTable.beginUpdates()
-            deleteShift(shift: Array(shiftInfo.keys)[indexPath.row], index: indexPath.row)
+            deleteShift(shift: shiftInfo[indexPath.row]![0] as! Shift, index: indexPath.row)
             updateView()
             shiftTable.deleteRows(at: [indexPath], with: .fade)
             shiftTable.endUpdates()
@@ -486,13 +492,12 @@ extension ViewController{
         }
         context.delete(shift)
         try! context.save()
-        shiftInfo.removeValue(forKey: shift)
+        shiftInfo[index] = nil
     }
     
     func pressedPayButton(with shift: Shift) {
         shift.payed = true
         shift.job!.hoursPaid += shift.length
-        shiftInfo[shift] = [false,"checkmark.circle", UIColor.systemGray2,UIColor.systemGray3]
         try! context.save()
         updateView()
     }
