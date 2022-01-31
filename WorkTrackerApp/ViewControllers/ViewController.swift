@@ -21,9 +21,10 @@ class ViewController: UIViewController {
     var selectedMonth: String!
     
     var newShift: Shift!
-    var shiftInfo: [Int:[Any]] = [:] // [shiftOrderNum: [shift, Bool(buttonEnabled), ButtonImageName, dateLabelColor, timeLabelColor]
+    var shiftInfo: [Int:Shift] = [:] //[shiftOrderIndex:Shift]
     var monthlyHoursPaid: Float!
     var monthlyHoursWorked: Float!
+    var monthlyMoneyOwed: Float!
     
     @IBOutlet weak var yearLabel: UILabel!
     @IBOutlet weak var monthLabel: UILabel!
@@ -44,12 +45,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var progressView: UIView!
     @IBOutlet weak var percentage: UILabel!
     @IBOutlet weak var fraction: UILabel!
+    @IBOutlet weak var moneyLabel: UILabel!
 }
 
 //MARK: - UI Functions
 extension ViewController{
     @IBAction func didTapInfo(_ sender: Any) {
-        //let calendar = Calendar.current
         let dForm = DateFormatter()
         dForm.dateFormat = "MMM d, yyyy"
         
@@ -93,6 +94,18 @@ extension ViewController{
 
 //MARK: - Visual Functions
 extension ViewController{
+    func setUpSwipeGesture(){
+        let swipeNextMonth = UISwipeGestureRecognizer(target: self, action: #selector(self.didTapNext(_:)))
+        swipeNextMonth.direction = UISwipeGestureRecognizer.Direction.left
+        
+        let swipePreviousMonth = UISwipeGestureRecognizer(target: self, action: #selector(self.didTapPrevious(_:)))
+        swipePreviousMonth.direction = UISwipeGestureRecognizer.Direction.right
+        
+        view.addGestureRecognizer(swipeNextMonth)
+        view.addGestureRecognizer(swipePreviousMonth)
+        
+    }
+    
     func configureOptionMenu(){
         let deleteJobAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { (action) in
             
@@ -106,7 +119,7 @@ extension ViewController{
         }
         
         let editJobAction = UIAction(title: "Edit"){ (action) in
-            self.alert.editJobAlert(jobName: self.selectedJob.name!)
+            self.alert.editJobAlert(job: self.selectedJob!)
         }
         
         let addJobAction = UIAction(title: "New Job", image: UIImage(systemName: "plus")) { (action) in
@@ -199,6 +212,7 @@ extension ViewController{
         
         hoursWorked.text = workedHoursClean
         
+        moneyLabel.text = "Owed $" + String(format: "%.2f", monthlyMoneyOwed!)
         fraction.text = paidHours + "/" + workedHours
         percentage.text = String(percent) + "%"
         progressBar.setProgress(progress, animated: false)
@@ -216,6 +230,7 @@ extension ViewController{
 extension ViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpSwipeGesture()
         //Set up alert instance
         alert.viewController = self
         
@@ -254,6 +269,7 @@ extension ViewController{
         //Resest values to perform calculations/gathering of data
         monthlyHoursPaid = 0
         monthlyHoursWorked = 0
+        monthlyMoneyOwed = 0
         shiftInfo = [:]
         
         if allShifts.count != 0{
@@ -261,22 +277,23 @@ extension ViewController{
             for i in 0...allShifts.count-1{
                 let shift = allShifts[i]
                 if shift.month == selectedMonth && shift.year == String(selectedDate.year!){
-                    if shift.payed == true{
-                        //ButEn,ButIm,dColor,tColor,
-                        shiftInfo[i] = [shift, false,"checkmark.circle", UIColor.systemGray2, UIColor.systemGray3]
-                    }else{
-                        shiftInfo[i] = [shift, true,"circle", UIColor.black,UIColor.darkGray]
-                    }
+                    shiftInfo[i] = shift
                 }
             }
             
-            //Update hours and amount owed
-            for i in 0...shiftInfo.values.count-1{
-                let shift = shiftInfo[i]![0] as! Shift
-                monthlyHoursWorked += shift.length
-                if shift.payed == true{
-                    monthlyHoursPaid += shift.length
+            if shiftInfo.count != 0{
+                //Update hours worked/paid
+                for i in 0...shiftInfo.values.count-1{
+                    let shift = shiftInfo[i]!
+                    monthlyHoursWorked += shift.length
+                    if shift.paid == true{
+                        monthlyHoursPaid += shift.length
+                    }
                 }
+                //Update money owed
+                let payRate = selectedJob!.payRate
+                monthlyMoneyOwed = payRate * (monthlyHoursWorked - monthlyHoursPaid)
+                
             }
         }
     }
@@ -344,7 +361,7 @@ extension ViewController{
         }else if shiftLength > 24{
             shiftLength -= 24
         }
-        //Get if shift is payed
+        //Get if shift is paid
         let shiftPaid = paidSwitch.isOn
         //Add shift to selected job in database
         let newShift = Shift(context: context)
@@ -353,7 +370,7 @@ extension ViewController{
         newShift.day = day
         newShift.time = stringWorkTimes
         newShift.length = abs(shiftLength)
-        newShift.payed = shiftPaid
+        newShift.paid = shiftPaid
         if shiftPaid == true{
             selectedJob.hoursPaid += shiftLength
         }
@@ -407,12 +424,12 @@ extension ViewController{
         
     }
     
-    func createNewJob(jobName: String){
+    func createNewJob(jobName: String, payRate: Float){
         let newJob = Job(context: context)
         newJob.name = jobName
         newJob.hoursWorked = 0
         newJob.hoursPaid = 0
-        newJob.payRate = 15.00
+        newJob.payRate = payRate
         newJob.shifts = []
         try! context.save()
         
@@ -436,7 +453,8 @@ extension ViewController{
         selectedJob.payRate = payRate
         try! self.context.save()
         
-        self.configureJobSwitch(newJob: self.selectedJob)
+        configureJobSwitch(newJob: self.selectedJob)
+        updateView()
         
     }
 }
@@ -460,14 +478,11 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
-        let eachShift = shiftInfo[indexPath.row]![0] as! Shift
-        var eachShiftInfo = shiftInfo[indexPath.row]!
-        eachShiftInfo.remove(at: 0)
+        let shift = shiftInfo[indexPath.row]!
+        let paid = shift.paid
         
         let cell = shiftTable.dequeueReusableCell(withIdentifier: ShiftTableViewCell.identifier, for: indexPath) as! ShiftTableViewCell
-        cell.configure(shift: eachShift, shiftInfo: eachShiftInfo)
+        cell.configure(shift: shift, paid: paid)
         cell.delegate = self
         return cell
     }
@@ -475,7 +490,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle  == .delete{
             shiftTable.beginUpdates()
-            deleteShift(shift: shiftInfo[indexPath.row]![0] as! Shift, index: indexPath.row)
+            deleteShift(shift: shiftInfo[indexPath.row]!, index: indexPath.row)
             updateView()
             shiftTable.deleteRows(at: [indexPath], with: .fade)
             shiftTable.endUpdates()
@@ -487,7 +502,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
 extension ViewController{
     func deleteShift(shift: Shift, index: Int){
         selectedJob.hoursWorked -= shift.length
-        if shift.payed == true{
+        if shift.paid == true{
             selectedJob.hoursPaid -= shift.length
         }
         context.delete(shift)
@@ -496,7 +511,7 @@ extension ViewController{
     }
     
     func pressedPayButton(with shift: Shift) {
-        shift.payed = true
+        shift.paid = true
         shift.job!.hoursPaid += shift.length
         try! context.save()
         updateView()

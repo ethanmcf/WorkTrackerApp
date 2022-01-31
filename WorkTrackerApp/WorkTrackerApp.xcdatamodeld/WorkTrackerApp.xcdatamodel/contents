@@ -11,13 +11,13 @@
         <attribute name="day" optional="YES" attributeType="String"/>
         <attribute name="length" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="month" optional="YES" attributeType="String"/>
-        <attribute name="payed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="paid" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="time" optional="YES" attributeType="String"/>
         <attribute name="year" optional="YES" attributeType="String"/>
         <relationship name="job" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Job" inverseName="shifts" inverseEntity="Job"/>
     </entity>
     <elements>
         <element name="Job" positionX="-63" positionY="-18" width="128" height="104"/>
-        <element name="Shift" positionX="-45" positionY="27" width="128" height="134"/>
+        <element name="Shift" positionX="-45" positionY="27" width="128" height="14"/>
     </elements>
 </model>

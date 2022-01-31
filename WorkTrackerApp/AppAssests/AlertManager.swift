@@ -33,6 +33,7 @@ class Alert{
         let padding = UIView(frame: CGRect(x:0,y: 0,width: 9,height: 30))
         
         var jobNameField = UITextField()
+        
         jobNameField.frame = CGRect(x: 35, y: 65, width: 200, height: 30)
         jobNameField.leftView = padding
         jobNameField.leftViewMode = .always
@@ -40,9 +41,50 @@ class Alert{
         jobNameField.layer.borderWidth = 1
         jobNameField.layer.borderColor = UIColor.systemGray5.cgColor
         jobNameField.layer.cornerRadius = 5
-        jobNameField.text = ""
         
         return jobNameField
+    }()
+    private var payRateField: UITextField = {
+        let padding = UIView(frame: CGRect(x:0,y: 0,width: 22,height: 30))
+        
+        let moneyLabel = UILabel()
+        moneyLabel.text = "$"
+        moneyLabel.textColor = .systemGray3
+        moneyLabel.frame = CGRect(x: 9, y: 0, width: 12, height: 30)
+        
+        var payRateField = UITextField()
+        payRateField.frame = CGRect(x: 35, y: 105, width: 200, height: 30)
+        payRateField.leftView = padding
+        payRateField.leftViewMode = .always
+        payRateField.backgroundColor = .white
+        payRateField.layer.borderWidth = 1
+        payRateField.layer.borderColor = UIColor.systemGray5.cgColor
+        payRateField.layer.cornerRadius = 5
+        payRateField.text = ""
+        
+        payRateField.keyboardType = .decimalPad
+        payRateField.addSubview(moneyLabel)
+        payRateField.addAction(UIAction(handler: { action in
+            let text = payRateField.text!.replacingOccurrences(of: " / hour", with: "")
+            let numCharacters = text.count
+            
+            payRateField.text! = text
+            payRateField.text = payRateField.text! + " / hour"
+            
+            if let newPosition = payRateField.position(from: payRateField.beginningOfDocument, offset: numCharacters) {
+
+                payRateField.selectedTextRange = payRateField.textRange(from: newPosition, to: newPosition)
+            }
+            
+            if numCharacters != 0 {
+                moneyLabel.textColor = .black
+                return
+            }
+            moneyLabel.textColor = .systemGray3
+            payRateField.text = ""
+            
+        }), for: .editingChanged)
+        return payRateField
     }()
     
     func presentInfoAlert(with title: String, message: String){
@@ -72,13 +114,24 @@ class Alert{
     
     func createJobAlert(){
         jobNameField.placeholder = "Job name"
+        jobNameField.text = ""
         
-        alertView = UIAlertController(title: "Create New Job", message: "\n\n\n", preferredStyle: .alert)
+        payRateField.placeholder = "Rate per hour"
+        payRateField.text = ""
+        
+        
+        alertView = UIAlertController(title: "Create New Job", message: "\n\n\n\n\n\n", preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
         let confirmAction = UIAlertAction(title: "Create", style: .default) { confirm in
-            self.viewController.createNewJob(jobName: self.jobNameField.text!)
+            let rateString = self.payRateField.text!.replacingOccurrences(of: " / hour", with: "")
+            let name = self.jobNameField.text!
+            if rateString.count != 0 && name.count != 0{
+                let rate = Float(rateString)
+                self.viewController.createNewJob(jobName: name, payRate: rate!)
+            }
         }
         
+        alertView.view.addSubview(payRateField)
         alertView.view.addSubview(jobNameField)
         alertView.addAction(cancelAction)
         alertView.addAction(confirmAction)
@@ -86,16 +139,26 @@ class Alert{
         viewController.present(alertView, animated: true, completion: nil)
     }
     
-    func editJobAlert(jobName: String){
-        jobNameField.placeholder = "Updated name"
+    func editJobAlert(job: Job){
+        jobNameField.placeholder = job.name!
+        jobNameField.text = ""
         
-        alertView = UIAlertController(title: "Edit \(jobName)", message: "\n\n\n", preferredStyle: .alert)
+        payRateField.placeholder = "Rate per hour"
+        payRateField.text = ""
+    
+        alertView = UIAlertController(title: "Edit \"\(job.name!)\"", message: "\n\n\n\n\n\n", preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
         let confirmAction = UIAlertAction(title: "Update", style: .default) { confirm in
-            self.viewController.editJob(jobName: self.jobNameField.text!, payRate: 15.00)
+            let rateString = self.payRateField.text!.replacingOccurrences(of: " / hour", with: "")
+            let name = self.jobNameField.text!
+            if rateString.count != 0 && name.count != 0{
+                let rate = Float(rateString)
+                self.viewController.editJob(jobName: name, payRate: rate!)
+            }
         }
         
         alertView.view.addSubview(jobNameField)
+        alertView.view.addSubview(payRateField)
         alertView.addAction(cancelAction)
         alertView.addAction(confirmAction)
         
@@ -242,7 +305,7 @@ class Alert{
     }
 }
 
-//MARK: - Alert OBJC Functions
+//MARK: - Alert Extra Functions
 extension Alert{
     @objc func updateShiftView(){
         let dateFormatter = DateFormatter()
@@ -256,4 +319,6 @@ extension Alert{
         dateLabel.text = dateTime
         
     }
+    
+    
 }

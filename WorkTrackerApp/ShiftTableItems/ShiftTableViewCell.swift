@@ -34,13 +34,20 @@ class ShiftTableViewCell: UITableViewCell {
         return UINib(nibName: "ShiftTableViewCell", bundle: nil)
     }
     
-    public func configure(shift: Shift, shiftInfo: [Any]){
+    public func configure(shift: Shift, paid: Bool){
         self.theShift = shift
-        payButton.isEnabled = shiftInfo[0] as! Bool
-        payButton.setImage(UIImage(systemName: shiftInfo[1] as! String), for: .normal)
-        theDate.textColor = shiftInfo[2] as? UIColor
-        time.textColor = shiftInfo[3] as? UIColor
         
+        if paid == true{
+            payButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+            theDate.textColor = UIColor.systemGray2
+            time.textColor = UIColor.systemGray3
+        }else{
+            payButton.setImage(UIImage(systemName: "circle"), for: .normal)
+            theDate.textColor = UIColor.black
+            time.textColor = UIColor.darkGray
+        }
+        
+        payButton.isEnabled = !paid
         theDate.text = "\(shift.month!) \(shift.day!), \(shift.year!)"
         time.text = shift.time
         amount.text = String(shift.length) + " hr"

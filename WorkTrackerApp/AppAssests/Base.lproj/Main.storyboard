@@ -341,6 +341,7 @@
                         <outlet property="fraction" destination="EFu-8P-E42" id="SVF-8C-iRz"/>
                         <outlet property="hoursWorked" destination="WvD-eM-bWl" id="80x-GZ-Imk"/>
                         <outlet property="jobButton" destination="h89-uU-bYp" id="DQ1-aB-Fk6"/>
+                        <outlet property="moneyLabel" destination="edN-CA-BQN" id="wA0-yN-Gkj"/>
                         <outlet property="monthLabel" destination="xgn-SP-H37" id="MfY-Ic-hDX"/>
                         <outlet property="nextCover" destination="yQ1-w6-WGg" id="ZD0-qX-HYi"/>
                         <outlet property="noShiftLabel" destination="eYh-ij-XnH" id="whF-6l-zYH"/>

@@ -18,7 +18,7 @@ extension Shift {
 
     @NSManaged public var length: Float
     @NSManaged public var time: String?
-    @NSManaged public var payed: Bool
+    @NSManaged public var paid: Bool
     @NSManaged public var month: String?
     @NSManaged public var day: String?
     @NSManaged public var year: String?
