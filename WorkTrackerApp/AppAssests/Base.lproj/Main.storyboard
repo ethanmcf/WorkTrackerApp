@@ -188,7 +188,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="info.circle" catalog="system" title=""/>
                                         <connections>
-                                            <action selector="jobInfoButtton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8xw-GW-OeW"/>
+                                            <action selector="didTapInfo:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZpW-fB-duR"/>
                                         </connections>
                                     </button>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="-5" translatesAutoresizingMaskIntoConstraints="NO" id="Pua-wM-iu6">
@@ -222,7 +222,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="plus" catalog="system"/>
                                         <connections>
-                                            <action selector="addShift:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eer-ke-rBT"/>
+                                            <action selector="didTapAddShift:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vNE-MP-E8G"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vLc-7L-QKy">
@@ -256,7 +256,7 @@
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" image="chevron.right" catalog="system"/>
                                                 <connections>
-                                                    <action selector="nextMonth:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4rc-Gs-qLz"/>
+                                                    <action selector="didTapNext:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xGV-lz-uML"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -278,7 +278,7 @@
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system"/>
                                                 <connections>
-                                                    <action selector="prevMonth:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Kk0-P4-S66"/>
+                                                    <action selector="didTapPrevious:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fkj-yA-eYv"/>
                                                 </connections>
                                             </button>
                                         </subviews>

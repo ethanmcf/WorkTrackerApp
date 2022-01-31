@@ -15,7 +15,6 @@
 		D6ABAE29273EFD670088089F /* WorkTrackerApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D6ABAE27273EFD670088089F /* WorkTrackerApp.xcdatamodeld */; };
 		D6ABAE2B273EFD680088089F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6ABAE2A273EFD680088089F /* Assets.xcassets */; };
 		D6ABAE2E273EFD680088089F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6ABAE2C273EFD680088089F /* LaunchScreen.storyboard */; };
-		D6BE5A84273EFE28002F3849 /* AddShiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BE5A83273EFE28002F3849 /* AddShiftViewController.swift */; };
 		D6BE5A87273EFE56002F3849 /* ShiftTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BE5A85273EFE56002F3849 /* ShiftTableViewCell.swift */; };
 		D6BE5A88273EFE56002F3849 /* ShiftTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6BE5A86273EFE56002F3849 /* ShiftTableViewCell.xib */; };
 		D6BE5AC0273F058B002F3849 /* Shift+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BE5ABE273F058B002F3849 /* Shift+CoreDataClass.swift */; };
@@ -54,7 +53,6 @@
 		D6ABAE2F273EFD680088089F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6ABAE34273EFD680088089F /* WorkTrackerAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WorkTrackerAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6ABAE3E273EFD680088089F /* WorkTrackerAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WorkTrackerAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D6BE5A83273EFE28002F3849 /* AddShiftViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddShiftViewController.swift; sourceTree = "<group>"; };
 		D6BE5A85273EFE56002F3849 /* ShiftTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftTableViewCell.swift; sourceTree = "<group>"; };
 		D6BE5A86273EFE56002F3849 /* ShiftTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShiftTableViewCell.xib; sourceTree = "<group>"; };
 		D6BE5ABE273F058B002F3849 /* Shift+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shift+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -124,7 +122,6 @@
 			isa = PBXGroup;
 			children = (
 				D6ABAE22273EFD670088089F /* ViewController.swift */,
-				D6BE5A83273EFE28002F3849 /* AddShiftViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -305,7 +302,6 @@
 				D6A0169827A78C7B00C5D1A2 /* AlertManager.swift in Sources */,
 				D6BE5AC5273F0BBE002F3849 /* Job+CoreDataProperties.swift in Sources */,
 				D6BE5AC0273F058B002F3849 /* Shift+CoreDataClass.swift in Sources */,
-				D6BE5A84273EFE28002F3849 /* AddShiftViewController.swift in Sources */,
 				D6ABAE23273EFD670088089F /* ViewController.swift in Sources */,
 				D6ABAE1F273EFD670088089F /* AppDelegate.swift in Sources */,
 				D6ABAE21273EFD670088089F /* SceneDelegate.swift in Sources */,

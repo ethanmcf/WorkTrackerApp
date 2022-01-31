@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     var selectedMonth: String!
     
     var newShift: Shift!
-    var shiftInfo: [Shift:[Any]] = [:] // [shiftOrderNum: []]   //ButEn,ButIm,dColor,tColor
+    var shiftInfo: [Shift:[Any]] = [:] // [shiftOrderNum: [shift]]   //ButEn,ButIm,dColor,tColor
     var monthlyHoursPaid: Float!
     var monthlyHoursWorked: Float!
     
@@ -48,7 +48,7 @@ class ViewController: UIViewController {
 
 //MARK: - UI Functions
 extension ViewController{
-    @IBAction func jobInfoButtton(_ sender: Any) {
+    @IBAction func didTapInfo(_ sender: Any) {
         //let calendar = Calendar.current
         let dForm = DateFormatter()
         dForm.dateFormat = "MMM d, yyyy"
@@ -74,24 +74,24 @@ extension ViewController{
         alert.presentInfoAlert(with: "\(selectedJob.name!) Info", message: message)
     }
     
-    @IBAction func prevMonth(_ sender: Any) {
+    @IBAction func didTapPrevious(_ sender: Any) {
         updateSelectedDate(increadBy: -1)
         updateView()
         shiftTable.reloadData()
     }
     
-    @IBAction func nextMonth(_ sender: Any) {
+    @IBAction func didTapNext(_ sender: Any) {
         updateSelectedDate(increadBy: 1)
         updateView()
         shiftTable.reloadData()
     }
     
-    @IBAction func addShift(_ sender: Any) {
-        alert.addShiftSheet(selectedDate: selectedDate) //configureAddShiftPopUp()
+    @IBAction func didTapAddShift(_ sender: Any) {
+        alert.addShiftSheet(selectedDate: selectedDate)
     }
 }
 
-//MARK: - Visual/Alert SetUp
+//MARK: - Visual Functions
 extension ViewController{
     func configureOptionMenu(){
         let deleteJobAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { (action) in
@@ -247,13 +247,14 @@ extension ViewController{
     }
     
     func getInfo(){
-        //Get shift info
-        let jobInfo = selectedJob!
-        var allShifts = (jobInfo.shifts!.allObjects as! [Shift])
+        //Gets all shifts from selected job in decending order
+        var allShifts = (selectedJob!.shifts!.allObjects as! [Shift])
         allShifts = allShifts.sorted(by: { Int($0.day!)! > Int($1.day!)! }).reversed()
         
+        //Get shifts for selected month and year/order them
         shiftInfo = [:]
-        for shift in allShifts{
+        for i in 0...allShifts.count{
+            let shift = allShifts[i]
             if shift.month == selectedMonth && shift.year == String(selectedDate.year!){
                 if shift.payed == true{
                     //ButEn,ButIm,dColor,tColor,
@@ -264,6 +265,7 @@ extension ViewController{
             }
         }
         
+        //Update hours and amount owed
         monthlyHoursPaid = 0
         monthlyHoursWorked = 0
         for shift in Array(shiftInfo.keys){
@@ -272,6 +274,7 @@ extension ViewController{
                 monthlyHoursPaid += shift.length
             }
         }
+        
     }
     
     func updateSelectedDate(increadBy amount: Int){
@@ -457,6 +460,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
         let cell = shiftTable.dequeueReusableCell(withIdentifier: ShiftTableViewCell.identifier, for: indexPath) as! ShiftTableViewCell
         let eachShift = Array(shiftInfo.keys)[indexPath.row]
         let eachShiftInfo = Array(shiftInfo.values)[indexPath.row]
+        print(indexPath.row)
         cell.configure(shift: eachShift, shiftInfo: eachShiftInfo)
         cell.delegate = self
         return cell
@@ -493,26 +497,3 @@ extension ViewController{
         updateView()
     }
 }
-
-/*let j = try! context.fetch(Job.fetchRequest())[0]
-j.hoursPaid = 2
-j.hoursWorked = 2
-try! context.save()*/
-/*
-try! context.save()
-let newJob = Job(context: context)
-newJob.name = "Skating Lab"
-newJob.hoursWorked = 25.0
-newJob.hoursPaid = 12.5
-newJob.payRate = 15
-newJob.shifts = []
-
-let newS = Shift(context: context)
-newS.length = 4.5
-newS.payed = false
-newS.year = "2021"
-newS.month = "October"
-newS.day = "15"
-newS.time = "time"
-newJob.addToShifts(newS)
-try! context.save()*/
