@@ -274,27 +274,21 @@ extension ViewController{
         
         if allShifts.count != 0{
             //Get shifts for selected month and year/order them
-            for i in 0...allShifts.count-1{
-                let shift = allShifts[i]
+            var count = 0
+            for shift in allShifts{
                 if shift.month == selectedMonth && shift.year == String(selectedDate.year!){
-                    shiftInfo[i] = shift
-                }
-            }
-            
-            if shiftInfo.count != 0{
-                //Update hours worked/paid
-                for i in 0...shiftInfo.values.count-1{
-                    let shift = shiftInfo[i]!
+                    shiftInfo[count] = shift
+                    count += 1
                     monthlyHoursWorked += shift.length
                     if shift.paid == true{
                         monthlyHoursPaid += shift.length
                     }
+                    
                 }
-                //Update money owed
-                let payRate = selectedJob!.payRate
-                monthlyMoneyOwed = payRate * (monthlyHoursWorked - monthlyHoursPaid)
-                
             }
+            //Update money owed
+            let payRate = selectedJob!.payRate
+            monthlyMoneyOwed = payRate * (monthlyHoursWorked - monthlyHoursPaid)
         }
     }
     
@@ -466,7 +460,8 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource, ShiftTableD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shiftInfo.keys.count
+        
+        return shiftInfo.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

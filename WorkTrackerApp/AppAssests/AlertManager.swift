@@ -38,8 +38,6 @@ class Alert{
         jobNameField.leftView = padding
         jobNameField.leftViewMode = .always
         jobNameField.backgroundColor = .white
-        jobNameField.layer.borderWidth = 1
-        jobNameField.layer.borderColor = UIColor.systemGray5.cgColor
         jobNameField.layer.cornerRadius = 5
         
         return jobNameField
@@ -57,11 +55,8 @@ class Alert{
         payRateField.leftView = padding
         payRateField.leftViewMode = .always
         payRateField.backgroundColor = .white
-        payRateField.layer.borderWidth = 1
-        payRateField.layer.borderColor = UIColor.systemGray5.cgColor
         payRateField.layer.cornerRadius = 5
         payRateField.text = ""
-        
         payRateField.keyboardType = .decimalPad
         payRateField.addSubview(moneyLabel)
         payRateField.addAction(UIAction(handler: { action in
